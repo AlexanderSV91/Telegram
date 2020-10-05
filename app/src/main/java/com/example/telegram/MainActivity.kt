@@ -2,7 +2,6 @@ package com.example.telegram
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.PatternMatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -11,6 +10,9 @@ import com.example.telegram.databinding.ActivityMainBinding
 import com.example.telegram.ui.fragments.ChatsFragment
 import com.example.telegram.ui.objects.AppDrawer
 import com.example.telegram.utilits.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,15 +29,11 @@ class MainActivity : AppCompatActivity() {
         APP_ACTIVITY = this
         initFirebase()
         initUser {
-            initContacts()
+            CoroutineScope(Dispatchers.IO).launch {
+                initContacts()
+            }
             initFields()
             initFunc()
-        }
-    }
-
-    private fun initContacts() {
-        if(checkPermissions(READ_CONTACTS)) {
-            showToast("Чтение контактов")
         }
     }
 
@@ -47,7 +45,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             replaceActivity(RegisterActivity())
         }
-
     }
 
     private fun initFields() {
