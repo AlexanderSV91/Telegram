@@ -4,10 +4,7 @@ import androidx.fragment.app.Fragment
 import com.example.telegram.MainActivity
 import com.example.telegram.R
 import com.example.telegram.activities.RegisterActivity
-import com.example.telegram.utilits.AUTH
-import com.example.telegram.utilits.replaceActivity
-import com.example.telegram.utilits.replaceFragment
-import com.example.telegram.utilits.showToast
+import com.example.telegram.utilits.*
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
@@ -27,6 +24,25 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
                 AUTH.signInWithCredential(credential).addOnCompleteListener { task ->
                     if (task.isSuccessful){
                         showToast("Добро пожаловать")
+
+                        //мой код
+                        val uid = AUTH.currentUser?.uid.toString()
+                        val dateMap = mutableMapOf<String, Any>()
+                        dateMap[CHILD_ID] = uid
+                        dateMap[CHILD_PHONE] = mPhoneNumber
+                        dateMap[CHILD_USERNAME] = uid
+
+                        REF_DATABASE_ROOT.child(NODE_PHONES).child(mPhoneNumber).setValue(uid)
+                            .addOnFailureListener { showToast(it.message.toString()) }
+                            .addOnSuccessListener {
+                                REF_DATABASE_ROOT.child(NODE_USERS).child(uid).updateChildren(dateMap)
+                                    .addOnSuccessListener {
+                                        showToast("Добро пожаловать")
+                                        (activity as RegisterActivity).replaceActivity(MainActivity())
+                                    }
+                                    .addOnFailureListener { showToast(it.message.toString()) }
+                            }
+
                         (activity as RegisterActivity).replaceActivity(MainActivity())
                     } else {
                         showToast(task.exception?.message.toString())
