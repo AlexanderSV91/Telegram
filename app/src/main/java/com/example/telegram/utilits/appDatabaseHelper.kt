@@ -2,7 +2,6 @@ package com.example.telegram.utilits
 
 import android.net.Uri
 import android.provider.ContactsContract
-import android.util.Log
 import com.example.telegram.models.CommonModel
 import com.example.telegram.models.User
 import com.google.firebase.auth.FirebaseAuth
@@ -12,6 +11,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.*
+import kotlin.collections.ArrayList
+
 
 lateinit var AUTH: FirebaseAuth
 lateinit var CURRENT_UID: String
@@ -73,10 +74,9 @@ inline fun initUser(crossinline function: () -> Unit) {
         })
 }
 
-
 fun initContacts() {
     if(checkPermissions(READ_CONTACTS)) {
-        var arrayContacts = arrayListOf<CommonModel>()
+        val arrayContacts = arrayListOf<CommonModel>()
         val cursor =
             APP_ACTIVITY.contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
