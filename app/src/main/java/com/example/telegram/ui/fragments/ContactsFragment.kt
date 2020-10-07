@@ -56,6 +56,7 @@ class ContactsFragment : BaseFragment(R.layout.fragment_contacts) {
                     holder.name.text = contacts.fullname
                     holder.status.text = contacts.state
                     holder.photo.downloadAndSetImage(contacts.photoUrl)
+                    holder.itemView.setOnClickListener { replaceFragment(SingleChatFragment(contacts)) }
                 }
 
                 mRefUsers.addValueEventListener(mRefUsersListener)
