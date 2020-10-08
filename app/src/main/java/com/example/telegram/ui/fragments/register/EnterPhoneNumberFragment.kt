@@ -1,9 +1,8 @@
-package com.example.telegram.ui.fragments
+package com.example.telegram.ui.fragments.register
 
 import androidx.fragment.app.Fragment
-import com.example.telegram.MainActivity
 import com.example.telegram.R
-import com.example.telegram.activities.RegisterActivity
+import com.example.telegram.database.*
 import com.example.telegram.utilits.*
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
@@ -14,15 +13,15 @@ import java.util.concurrent.TimeUnit
 
 class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) {
 
-    private lateinit var mPhoneNumber:String
-    private lateinit var mCallback:PhoneAuthProvider.OnVerificationStateChangedCallbacks
+    private lateinit var mPhoneNumber: String
+    private lateinit var mCallback: PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
     override fun onStart() {
         super.onStart()
-        mCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks(){
+        mCallback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 AUTH.signInWithCredential(credential).addOnCompleteListener { task ->
-                    if (task.isSuccessful){
+                    if (task.isSuccessful) {
                         showToast("Добро пожаловать")
 
                         //мой код
@@ -35,15 +34,14 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
                         REF_DATABASE_ROOT.child(NODE_PHONES).child(mPhoneNumber).setValue(uid)
                             .addOnFailureListener { showToast(it.message.toString()) }
                             .addOnSuccessListener {
-                                REF_DATABASE_ROOT.child(NODE_USERS).child(uid).updateChildren(dateMap)
+                                REF_DATABASE_ROOT.child(NODE_USERS).child(uid)
+                                    .updateChildren(dateMap)
                                     .addOnSuccessListener {
                                         showToast("Добро пожаловать")
-                                        (activity as RegisterActivity).replaceActivity(MainActivity())
+                                        restartActivity()
                                     }
                                     .addOnFailureListener { showToast(it.message.toString()) }
                             }
-
-                        (activity as RegisterActivity).replaceActivity(MainActivity())
                     } else {
                         showToast(task.exception?.message.toString())
                     }
@@ -55,7 +53,7 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
             }
 
             override fun onCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
-                replaceFragment(EnterCodeFragment(mPhoneNumber,id))
+                replaceFragment(EnterCodeFragment(mPhoneNumber, id))
             }
         }
 
@@ -63,7 +61,7 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
     }
 
     private fun sendCode() {
-        if (register_input_phone_number.text.toString().isEmpty()){
+        if (register_input_phone_number.text.toString().isEmpty()) {
             showToast(getString(R.string.register_toast_enter_phone))
         } else {
             authUser()
@@ -76,7 +74,7 @@ class EnterPhoneNumberFragment : Fragment(R.layout.fragment_enter_phone_number) 
             mPhoneNumber,
             60,
             TimeUnit.SECONDS,
-            activity as RegisterActivity,
+            APP_ACTIVITY,
             mCallback
         )
     }

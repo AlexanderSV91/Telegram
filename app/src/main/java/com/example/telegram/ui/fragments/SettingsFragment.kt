@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import com.example.telegram.R
-import com.example.telegram.activities.RegisterActivity
+import com.example.telegram.database.*
 import com.example.telegram.utilits.*
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -47,11 +47,11 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.settings_menu_exit -> {
                 AppStates.updateState(AppStates.OFFLINE)
                 AUTH.signOut()
-                APP_ACTIVITY.replaceActivity(RegisterActivity())
+                restartActivity()
             }
             R.id.settings_menu_change_name -> replaceFragment(ChangeNameFragment())
         }
@@ -60,7 +60,7 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE &&
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE &&
             resultCode == RESULT_OK && data != null
         ) {
             val uri = CropImage.getActivityResult(data).uri

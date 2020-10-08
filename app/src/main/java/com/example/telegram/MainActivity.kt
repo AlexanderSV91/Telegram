@@ -5,9 +5,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import com.example.telegram.activities.RegisterActivity
+import com.example.telegram.database.AUTH
+import com.example.telegram.database.initFirebase
+import com.example.telegram.database.initUser
 import com.example.telegram.databinding.ActivityMainBinding
-import com.example.telegram.ui.fragments.ChatsFragment
+import com.example.telegram.ui.fragments.MainFragment
+import com.example.telegram.ui.fragments.register.EnterPhoneNumberFragment
 import com.example.telegram.ui.objects.AppDrawer
 import com.example.telegram.utilits.*
 import kotlinx.coroutines.CoroutineScope
@@ -38,12 +41,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFunc() {
-        if(AUTH.currentUser != null) {
-            setSupportActionBar(mToolbar)
+        setSupportActionBar(mToolbar)
+        if (AUTH.currentUser != null) {
             mAppDrawer.create()
-            replaceFragment(ChatsFragment(), false)
+            replaceFragment(MainFragment(), false)
         } else {
-            replaceActivity(RegisterActivity())
+            replaceFragment(EnterPhoneNumberFragment(), false)
         }
     }
 
@@ -68,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(ContextCompat.checkSelfPermission(APP_ACTIVITY, READ_CONTACTS) ==
+        if (ContextCompat.checkSelfPermission(APP_ACTIVITY, READ_CONTACTS) ==
             PackageManager.PERMISSION_GRANTED
         ) {
             initContacts()
