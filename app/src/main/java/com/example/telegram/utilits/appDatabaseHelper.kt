@@ -1,7 +1,6 @@
 package com.example.telegram.utilits
 
 import android.net.Uri
-import android.provider.ContactsContract
 import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.google.firebase.auth.FirebaseAuth
@@ -11,7 +10,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlin.collections.ArrayList
 
 
 lateinit var AUTH: FirebaseAuth
