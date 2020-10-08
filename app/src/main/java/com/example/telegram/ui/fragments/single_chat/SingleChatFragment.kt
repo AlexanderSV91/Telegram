@@ -8,13 +8,14 @@ import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.example.telegram.ui.fragments.BaseFragment
 import com.example.telegram.utilits.*
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DatabaseReference
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fragment_single_chat.*
 import kotlinx.android.synthetic.main.toolbar_info.view.*
 
 class SingleChatFragment(private val contacts: CommonModel) :
-        BaseFragment(R.layout.fragment_single_chat) {
+    BaseFragment(R.layout.fragment_single_chat) {
 
     private lateinit var mListenerInfoToolbar: AppValueEventListener
     private lateinit var mReceivingUser: UserModel
@@ -23,8 +24,8 @@ class SingleChatFragment(private val contacts: CommonModel) :
     private lateinit var mRefMessages: DatabaseReference
     private lateinit var mAdapter: SingleChatAdapter
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mMessagesListener: AppValueEventListener
-    private var mListMessages = emptyList<CommonModel>()
+    private lateinit var mMessagesListener: ChildEventListener
+    private var mListMessages = mutableListOf<CommonModel>()
 
     override fun onResume() {
         super.onResume()
@@ -37,12 +38,13 @@ class SingleChatFragment(private val contacts: CommonModel) :
         mAdapter = SingleChatAdapter()
         mRefMessages = REF_DATABASE_ROOT.child(NODE_MESSAGES).child(CURRENT_UID).child(contacts.id)
         mRecyclerView.adapter = mAdapter
-        mMessagesListener = AppValueEventListener { dataSnapshot ->
-            mListMessages = dataSnapshot.children.map { it -> it.getCommonModel() }
-            mAdapter.setList(mListMessages)
+
+        mMessagesListener = AppChildEventListener() {
+            mAdapter.addItem(it.getCommonModel())
             mRecyclerView.smoothScrollToPosition(mAdapter.itemCount)
         }
-        mRefMessages.addValueEventListener(mMessagesListener)
+
+        mRefMessages.addChildEventListener(mMessagesListener)
     }
 
     private fun initToolbar() {
