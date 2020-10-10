@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.telegram.database.CURRENT_UID
 import com.example.telegram.database.getFileFromStorage
 import com.example.telegram.ui.message_recycler_view.views.MessageView
-import com.example.telegram.utilits.WRITE_FILES
-import com.example.telegram.utilits.asTime
-import com.example.telegram.utilits.checkPermissions
-import com.example.telegram.utilits.showToast
+import com.example.telegram.utilits.*
 import kotlinx.android.synthetic.main.message_item_file.view.*
 import java.io.File
 
@@ -68,10 +65,11 @@ class HolderFileMessage(view: View) : RecyclerView.ViewHolder(view), MessageHold
             chatReceivedProgressBar.visibility = View.VISIBLE
         }
 
-        val file = File(
+        val file = File(APP_ACTIVITY.filesDir, view.text)
+        /*val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             view.text
-        )
+        )*/
 
         try {
             if (checkPermissions(WRITE_FILES)) {
@@ -87,7 +85,6 @@ class HolderFileMessage(view: View) : RecyclerView.ViewHolder(view), MessageHold
                 }
             }
         } catch (e: Exception) {
-            Log.i("Test", "HolderFileMessage " + e.message.toString())
             showToast("HolderFileMessage " + e.message.toString())
         }
     }
