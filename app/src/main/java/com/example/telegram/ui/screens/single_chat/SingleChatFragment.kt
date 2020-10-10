@@ -193,6 +193,7 @@ class SingleChatFragment(private val contact: CommonModel) :
                 showToast("Введите сообщение")
             } else {
                 sendMessage(message, contact.id, TYPE_TEXT) {
+                    saveToMainList(contact.id, TYPE_CHANNEL)
                     chat_input_message.setText("")
                 }
             }

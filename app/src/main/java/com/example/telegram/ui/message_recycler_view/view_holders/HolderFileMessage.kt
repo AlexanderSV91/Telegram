@@ -66,6 +66,12 @@ class HolderFileMessage(view: View) : RecyclerView.ViewHolder(view), MessageHold
         }
 
         val file = File(APP_ACTIVITY.filesDir, view.text)
+        /*val file =
+            File(APP_ACTIVITY.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), view.text)
+        Log.i(
+            "Test",
+            "" + APP_ACTIVITY.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath
+        )*/
         /*val file = File(
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
             view.text
