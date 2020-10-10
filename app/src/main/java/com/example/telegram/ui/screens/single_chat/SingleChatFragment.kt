@@ -16,7 +16,7 @@ import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.example.telegram.ui.message_recycler_view.views.AppViewFactory
 import com.example.telegram.ui.screens.BaseFragment
-import com.example.telegram.ui.screens.settings.ChangeNameFragment
+import com.example.telegram.ui.screens.main_list.MainListFragment
 import com.example.telegram.utilits.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.DatabaseReference
@@ -253,7 +253,18 @@ class SingleChatFragment(private val contact: CommonModel) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-
+            R.id.menu_clear_chat -> {
+                clearChat(contact.id) {
+                    showToast("Чат очищен")
+                    replaceFragment(MainListFragment())
+                }
+            }
+            R.id.menu_delete_chat -> {
+                deleteChat(contact.id) {
+                    showToast("Чат удален")
+                    replaceFragment(MainListFragment())
+                }
+            }
         }
         return true
     }
