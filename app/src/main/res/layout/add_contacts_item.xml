@@ -20,9 +20,9 @@
         android:id="@+id/add_contacts_item_choice"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:background="@color/colorAccent"
         android:src="@drawable/ic_choice"
         android:visibility="invisible"
+        app:civ_circle_background_color="@color/colorGreen"
         app:layout_constraintBottom_toBottomOf="@+id/add_contacts_item_photo"
         app:layout_constraintEnd_toEndOf="@+id/add_contacts_item_photo" />
 
