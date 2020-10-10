@@ -15,7 +15,7 @@ import com.example.telegram.database.*
 import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.example.telegram.ui.message_recycler_view.views.AppViewFactory
-import com.example.telegram.ui.screens.BaseFragment
+import com.example.telegram.ui.screens.base.BaseFragment
 import com.example.telegram.ui.screens.main_list.MainListFragment
 import com.example.telegram.utilits.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
