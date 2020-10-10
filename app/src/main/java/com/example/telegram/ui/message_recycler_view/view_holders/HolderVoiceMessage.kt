@@ -79,13 +79,13 @@ class HolderVoiceMessage(view: View) : RecyclerView.ViewHolder(view), MessageHol
         mAppVoicePlayer.play(view.id, view.fileUrl) { function() }
     }
 
-    private fun stop(function: () -> Unit) {
+    fun stop(function: () -> Unit) {
         mAppVoicePlayer.stop { function() }
     }
 
     override fun onDetach() {
-        chatUserBtnPlay.setOnClickListener(null)
         chatReceivedBtnPlay.setOnClickListener(null)
+        chatUserBtnPlay.setOnClickListener(null)
         mAppVoicePlayer.release()
     }
 }

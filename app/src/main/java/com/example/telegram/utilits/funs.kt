@@ -43,8 +43,8 @@ fun replaceFragment(fragment: Fragment, addStack: Boolean = true) {
 }
 
 fun hideKeyboard() {
-    val imm: InputMethodManager =
-        APP_ACTIVITY.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    val imm: InputMethodManager = APP_ACTIVITY.getSystemService(Context.INPUT_METHOD_SERVICE)
+            as InputMethodManager
     imm.hideSoftInputFromWindow(APP_ACTIVITY.window.decorView.windowToken, 0)
 }
 
@@ -57,10 +57,9 @@ fun ImageView.downloadAndSetImage(url: String) {
 }
 
 fun initContacts() {
-    if (checkPermissions(READ_CONTACTS)) {
-        val arrayContacts = arrayListOf<CommonModel>()
-        val cursor =
-            APP_ACTIVITY.contentResolver.query(
+    if (checkPermission(READ_CONTACTS)) {
+        var arrayContacts = arrayListOf<CommonModel>()
+        val cursor = APP_ACTIVITY.contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null,
                 null,

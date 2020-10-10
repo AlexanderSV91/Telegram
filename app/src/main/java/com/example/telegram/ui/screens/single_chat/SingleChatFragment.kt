@@ -1,7 +1,6 @@
 package com.example.telegram.ui.screens.single_chat
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.view.*
@@ -40,7 +39,7 @@ class SingleChatFragment(private val contact: CommonModel) :
     private lateinit var mAdapter: SingleChatAdapter
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mMessagesListener: AppChildEventListener
-    private var mCountMessages = 15
+    private var mCountMessages = 10
     private var mIsScrolling = false
     private var mSmoothScrollToPosition = true
     private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
@@ -80,7 +79,7 @@ class SingleChatFragment(private val contact: CommonModel) :
 
         CoroutineScope(Dispatchers.IO).launch {
             chat_btn_voice.setOnTouchListener { v, event ->
-                if (checkPermissions(RECORD_AUDIO)) {
+                if (checkPermission(RECORD_AUDIO)) {
                     if (event.action == MotionEvent.ACTION_DOWN) {
                         chat_input_message.setText("Запись")
                         chat_btn_voice
@@ -89,7 +88,7 @@ class SingleChatFragment(private val contact: CommonModel) :
                         mAppVoiceRecorder.startRecord(messageKey)
                     } else if (event.action == MotionEvent.ACTION_UP) {
                         chat_input_message.setText("")
-                        chat_btn_voice.setColorFilter(null)
+                        chat_btn_voice.colorFilter = null
                         mAppVoiceRecorder.stopRecord { file, messageKey ->
                             uploadFileToStorage(
                                 Uri.fromFile(file),
@@ -97,6 +96,7 @@ class SingleChatFragment(private val contact: CommonModel) :
                                 contact.id,
                                 TYPE_MESSAGE_VOICE
                             )
+                            mSmoothScrollToPosition = true
                         }
                     }
                 }
@@ -133,8 +133,7 @@ class SingleChatFragment(private val contact: CommonModel) :
         mRecyclerView.setHasFixedSize(true)
         mRecyclerView.isNestedScrollingEnabled = false
         mRecyclerView.layoutManager = mLayoutManager
-
-        mMessagesListener = AppChildEventListener() {
+        mMessagesListener = AppChildEventListener {
             val message = it.getCommonModel()
             if (mSmoothScrollToPosition) {
                 mAdapter.addItemToBottom(AppViewFactory.getView(message)) {
@@ -150,17 +149,17 @@ class SingleChatFragment(private val contact: CommonModel) :
         mRefMessages.limitToLast(mCountMessages).addChildEventListener(mMessagesListener)
 
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                    mIsScrolling = true
-                }
-            }
-
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (mIsScrolling && dy < 0 && mLayoutManager.findFirstVisibleItemPosition() <= 3) {
                     updateData()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    mIsScrolling = true
                 }
             }
         })
@@ -194,7 +193,7 @@ class SingleChatFragment(private val contact: CommonModel) :
                 showToast("Введите сообщение")
             } else {
                 sendMessage(message, contact.id, TYPE_TEXT) {
-                    saveToMainList(contact.id, TYPE_CHANNEL)
+                    saveToMainList(contact.id, TYPE_CHAT)
                     chat_input_message.setText("")
                 }
             }
@@ -214,7 +213,7 @@ class SingleChatFragment(private val contact: CommonModel) :
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (data != null && Activity.RESULT_OK == resultCode) {
+        if (data != null) {
             when (requestCode) {
                 CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
                     val uri = CropImage.getActivityResult(data).uri
@@ -224,7 +223,7 @@ class SingleChatFragment(private val contact: CommonModel) :
                 }
 
                 PICK_FILE_REQUEST_CODE -> {
-                    val uri = data?.data
+                    val uri = data.data
                     val messageKey = getMessageKey(contact.id)
                     val filename = getFilenameFromUri(uri!!)
                     uploadFileToStorage(uri, messageKey, contact.id, TYPE_MESSAGE_FILE, filename)
@@ -236,13 +235,13 @@ class SingleChatFragment(private val contact: CommonModel) :
 
     override fun onPause() {
         super.onPause()
-        APP_ACTIVITY.mToolbar.toolbar_info.visibility = View.GONE
+        mToolbarInfo.visibility = View.GONE
         mRefUser.removeEventListener(mListenerInfoToolbar)
         mRefMessages.removeEventListener(mMessagesListener)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mAppVoiceRecorder.releaseRecorder()
         mAdapter.onDestroy()
     }
@@ -253,17 +252,13 @@ class SingleChatFragment(private val contact: CommonModel) :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_clear_chat -> {
-                clearChat(contact.id) {
-                    showToast("Чат очищен")
-                    replaceFragment(MainListFragment())
-                }
+            R.id.menu_clear_chat -> clearChat(contact.id) {
+                showToast("Чат очищен")
+                replaceFragment(MainListFragment())
             }
-            R.id.menu_delete_chat -> {
-                deleteChat(contact.id) {
-                    showToast("Чат удален")
-                    replaceFragment(MainListFragment())
-                }
+            R.id.menu_delete_chat -> deleteChat(contact.id) {
+                showToast("Чат удален")
+                replaceFragment(MainListFragment())
             }
         }
         return true

@@ -6,6 +6,7 @@ import com.example.telegram.models.CommonModel
 import com.example.telegram.models.UserModel
 import com.example.telegram.utilits.APP_ACTIVITY
 import com.example.telegram.utilits.AppValueEventListener
+import com.example.telegram.utilits.TYPE_GROUP
 import com.example.telegram.utilits.showToast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -14,6 +15,7 @@ import com.google.firebase.database.ServerValue
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
+import java.util.*
 
 fun initFirebase() {
     AUTH = FirebaseAuth.getInstance()
@@ -242,13 +244,14 @@ fun createGroupToDatabase(
     listContacts: List<CommonModel>,
     function: () -> Unit
 ) {
-    val keyGroup = REF_DATABASE_ROOT.child(NODE_GROUPS).push().key.toString();
+    val keyGroup = REF_DATABASE_ROOT.child(NODE_GROUPS).push().key.toString()
     val path = REF_DATABASE_ROOT.child(NODE_GROUPS).child(keyGroup)
     val pathStorage = REF_STORAGE_ROOT.child(FOLDER_GROUPS_IMAGE).child(keyGroup)
 
     val mapData = hashMapOf<String, Any>()
     mapData[CHILD_ID] = keyGroup
     mapData[CHILD_FULLNAME] = nameGroup
+    mapData[CHILD_PHOTO_URL] = "empty"
 
     val mapMembers = hashMapOf<String, Any>()
     listContacts.forEach {
@@ -261,13 +264,37 @@ fun createGroupToDatabase(
     path.updateChildren(mapData)
         .addOnFailureListener { showToast(it.message.toString()) }
         .addOnSuccessListener {
-            function()
             if (uri != Uri.EMPTY) {
                 putFileToStorage(uri, pathStorage) {
-                    getUrlFromStorage(pathStorage) { it ->
-                        path.child(CHILD_FILE_URL).setValue(it)
+                    getUrlFromStorage(pathStorage) {
+                        path.child(CHILD_PHOTO_URL).setValue(it)
+                        addGroupstoMainList(mapData, listContacts) {
+                            function()
+                        }
                     }
+                }
+            } else {
+                addGroupstoMainList(mapData, listContacts) {
+                    function()
                 }
             }
         }
+}
+
+fun addGroupstoMainList(
+    mapData: HashMap<String, Any>,
+    listContacts: List<CommonModel>,
+    function: () -> Unit
+) {
+    val path = REF_DATABASE_ROOT.child(NODE_MAIN_LIST)
+    val map = hashMapOf<String, Any>()
+
+    map[CHILD_ID] = mapData[CHILD_ID].toString()
+    map[CHILD_TYPE] = TYPE_GROUP
+    listContacts.forEach {
+        path.child(it.id).child(map[CHILD_ID].toString()).updateChildren(map)
+    }
+    path.child(CURRENT_UID).child(map[CHILD_ID].toString()).updateChildren(map)
+        .addOnSuccessListener { function() }
+        .addOnFailureListener { showToast(it.message.toString()) }
 }

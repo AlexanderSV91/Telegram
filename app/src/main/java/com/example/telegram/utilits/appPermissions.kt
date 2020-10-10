@@ -12,7 +12,7 @@ const val WRITE_FILES = Manifest.permission.WRITE_EXTERNAL_STORAGE
 
 const val PERMISSION_REQUEST = 200
 
-fun checkPermissions(permission: String): Boolean {
+fun checkPermission(permission: String): Boolean {
     return if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
             APP_ACTIVITY,
             permission

@@ -1,7 +1,5 @@
 package com.example.telegram.ui.message_recycler_view.view_holders
 
-import android.os.Environment
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
@@ -78,7 +76,7 @@ class HolderFileMessage(view: View) : RecyclerView.ViewHolder(view), MessageHold
         )*/
 
         try {
-            if (checkPermissions(WRITE_FILES)) {
+            if (checkPermission(WRITE_FILES)) {
                 file.createNewFile()
                 getFileFromStorage(file, view.fileUrl) {
                     if (view.from == CURRENT_UID) {

@@ -48,7 +48,7 @@ class SingleChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun addItemToTop(item: MessageView, onSuccess: () -> Unit) {
         if (!mListMessagesCache.contains(item)) {
             mListMessagesCache.add(item)
-            mListMessagesCache.sortBy { it.timeStamp }
+            mListMessagesCache.sortBy { it.timeStamp.toString() }
             notifyItemInserted(0)
         }
         onSuccess()

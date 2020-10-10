@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.telegram.R
-import com.example.telegram.database.*
+import com.example.telegram.database.createGroupToDatabase
 import com.example.telegram.models.CommonModel
 import com.example.telegram.ui.screens.base.BaseFragment
 import com.example.telegram.ui.screens.main_list.MainListFragment
@@ -13,7 +13,6 @@ import com.example.telegram.utilits.*
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.fragment_create_group.*
-import kotlinx.android.synthetic.main.fragment_settings.*
 
 class CreateGroupFragment(private var listContacts: List<CommonModel>) :
     BaseFragment(R.layout.fragment_create_group) {
