@@ -1,8 +1,9 @@
-package com.example.telegram.ui.screens
+package com.example.telegram.ui.screens.settings
 
 import com.example.telegram.R
 import com.example.telegram.database.USER
 import com.example.telegram.database.setNameToDatabase
+import com.example.telegram.ui.screens.BaseChangeFragment
 import com.example.telegram.utilits.showToast
 import kotlinx.android.synthetic.main.fragment_change_name.*
 
